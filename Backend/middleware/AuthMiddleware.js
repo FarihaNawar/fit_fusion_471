@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const SECRET = process.env.JWT_SECRET || 'dev_secret_key_change_me';
 
 const authenticate = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -8,8 +9,8 @@ const authenticate = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Extracted userId
+    const decoded = jwt.verify(token, SECRET);
+    req.user = decoded; // contains userId/email/role
     next();
   } catch (err) {
     console.error("Token verification error:", err.message);
@@ -17,4 +18,11 @@ const authenticate = (req, res, next) => {
   }
 };
 
-module.exports = authenticate;
+const requireAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({ message: "Admin access required" });
+  }
+  next();
+};
+
+module.exports = { authenticate, requireAdmin };

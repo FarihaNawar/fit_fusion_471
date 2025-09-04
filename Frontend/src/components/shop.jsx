@@ -1,92 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { backend } from "../context/api";
+import { AuthContext } from "../context/authcontext";
 
 function Shop() {
-  const productData = [
-    // Protein Products
-    {
-      _id: "protein1",
-      name: "Optimum Nutrition Gold Standard Whey",
-      category: "Protein",
-      price: 5599,
-      imageUrl: "https://i5.walmartimages.com/seo/Optimum-Nutrition-Gold-Standard-100-Whey-Protein-Powder-French-Vanilla-Creme-2-lb-29-Servings_d7f0bdcd-5f1f-4412-82a1-5432147c7abc_1.a4d5207909f2a0e605580e6b9b18ec1c.jpeg",
-      buyLink: "https://www.gymsupplementscenterbangladesh.com/view/details/Protein/89",
-    },
-    {
-      _id: "protein2",
-      name: "Muscletech Nitrotech 100% Whey Gold",
-      category: "Protein",
-      price: 5500,
-      imageUrl: "https://www.gymsupplementscenterbangladesh.com/uploads/product/057776be60caed1eb5d32011515b33f3.jpg",
-      buyLink: "https://www.nutritiondepot.com.bd/product/muscletech-nitrotech-100-whey-gold-double-rich-chocolate-2-lbs/",
-    },
-    {
-      _id: "protein3",
-      name: "Dymatize ISO 100",
-      category: "Protein",
-      price: 5000,
-      imageUrl: "https://www.powerbody.co.uk/media/catalog/product/cache/3/og_image/image_2017-11-15_5a0c194b990d2.jpg",
-      buyLink: "https://gymsupplementsbd.com/product/dymatize-iso-100/",
-    },
-    // Vitamins Products
-    {
-      _id: "vitamin1",
-      name: "Optimum Nutrition Opti-Men",
-      category: "Vitamins",
-      price: 3490,
-      imageUrl: "https://www.gymsupplementscenterbangladesh.com/uploads/product/qqqq.jpg",
-      buyLink: "https://bdsupplementstore.com/product/opti-men-multivitamin-in-bangladesh/",
-    },
-    {
-      _id: "vitamin2",
-      name: "Muscletech Platinum Multivitamin",
-      category: "Vitamins",
-      price: 1990,
-      imageUrl: "https://www.muscletech.com/cdn/shop/files/mt-platinum-multi-vitamin-90-count.png?v=1742823408&width=1024",
-      buyLink: "https://bdsupplementstore.com/product/muscletech-platinum-multivitamin-bd/",
-    },
-    {
-      _id: "vitamin3",
-      name: "Animal Pak",
-      category: "Vitamins",
-      price: 4300,
-      imageUrl: "https://gymsupplementsbd.com/wp-content/uploads/2021/07/animal-pak-44-serving-06-600x600.jpg",
-      buyLink: "https://authenticsupplementbd.com/product/animal-pak/",
-    },
-    // Pre-Workout Products
-    {
-      _id: "preworkout1",
-      name: "Cellucor C4 Original",
-      category: "Pre-Workout",
-      price: 3199,
-      imageUrl: "https://excartbd.com/cdn/shop/products/C4-Original-Pre-Workout-Powder-30-servings-icy-blue-razz-at-excartbd.com_700x700.jpg?v=1669142591",
-      buyLink: "https://www.gymsupplementscenterbangladesh.com/view/details/Pre-Workout/41",
-    },
-    {
-      _id: "preworkout2",
-      name: "BSN N.O.-Xplode",
-      category: "Pre-Workout",
-      price: 3500,
-      imageUrl: "https://gymsupplementsbd.com/wp-content/uploads/2021/07/no-xplode-30-serving-05-600x600.jpg",
-      buyLink: "https://gymsupplementsbd.com/product/no-xplode/",
-    },
-    {
-      _id: "preworkout3",
-      name: "Muscletech Vapor X5",
-      category: "Pre-Workout",
-      price: 3500,
-      imageUrl: "https://gymsupplementsbd.com/wp-content/uploads/2024/05/Muscletech-Vapor-X5-01-gymsupplementsbd.jpg",
-      buyLink: "https://gymsupplementsbd.com/product/muscletech-vapor-x5-ripped/",
-    },
-  ];
-
-  const [products] = useState(productData);
-  const [filteredProducts, setFilteredProducts] = useState(productData);
+  const { user } = useContext(AuthContext);
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [filters, setFilters] = useState({
     category: "All",
     priceRange: [0, 20000],
     search: "",
   });
   const [cart, setCart] = useState([]);
+  const [form, setForm] = useState({ name: '', price: '', category: 'Protein', imageUrl: '', description: '' });
+  const [editingId, setEditingId] = useState(null);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get(`${backend}/api/products`);
+      setProducts(res.data);
+    } catch (e) {
+      console.error('Failed to load products', e);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     let filtered = products;
@@ -143,6 +84,43 @@ function Shop() {
     window.open(buyLink, "_blank");
   };
 
+  const resetForm = () => {
+    setForm({ name: '', price: '', category: 'Protein', imageUrl: '', description: '' });
+    setEditingId(null);
+  };
+
+  const submitProduct = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('authToken');
+    try {
+      if (editingId) {
+        await axios.put(`${backend}/api/products/${editingId}`, form, { headers: { Authorization: `Bearer ${token}` } });
+      } else {
+        await axios.post(`${backend}/api/products`, form, { headers: { Authorization: `Bearer ${token}` } });
+      }
+      resetForm();
+      fetchProducts();
+    } catch (e) {
+      console.error('Save failed', e);
+    }
+  };
+
+  const editProduct = (p) => {
+    setForm({ name: p.name, price: p.price, category: p.category, imageUrl: p.imageUrl, description: p.description || '' });
+    setEditingId(p._id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const deleteProduct = async (id) => {
+    const token = localStorage.getItem('authToken');
+    try {
+      await axios.delete(`${backend}/api/products/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      fetchProducts();
+    } catch (e) {
+      console.error('Delete failed', e);
+    }
+  };
+
   return (
     <div>
       <section>
@@ -196,6 +174,28 @@ function Shop() {
             />
           </div>
 
+          {user?.role === 'admin' && (
+            <form onSubmit={submitProduct} className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 items-end">
+              <input className="border p-2 rounded" placeholder="Name" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} required />
+              <input className="border p-2 rounded" placeholder="Price" type="number" value={form.price} onChange={e=>setForm({...form,price:Number(e.target.value)})} required />
+              <select className="border p-2 rounded" value={form.category} onChange={e=>setForm({...form,category:e.target.value})}>
+                <option>Protein</option>
+                <option>Vitamins</option>
+                <option>Pre-Workout</option>
+              </select>
+              <input className="border p-2 rounded" placeholder="Image URL" value={form.imageUrl} onChange={e=>setForm({...form,imageUrl:e.target.value})} required />
+              <input className="border p-2 rounded sm:col-span-2" placeholder="Description (optional)" value={form.description} onChange={e=>setForm({...form,description:e.target.value})} />
+              <div className="sm:col-span-2">
+                <button type="submit" className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700">
+                  {editingId ? 'Update Product' : 'Add Product'}
+                </button>
+                {editingId && (
+                  <button type="button" onClick={resetForm} className="ml-2 px-4 py-2 bg-gray-200 rounded">Cancel</button>
+                )}
+              </div>
+            </form>
+          )}
+
           <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {filteredProducts.map((product) => (
               <li
@@ -223,12 +223,12 @@ function Shop() {
                     >
                       Add to Cart
                     </button>
-                    <button
-                      onClick={() => handleBuyNow(product.buyLink)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      Buy Now
-                    </button>
+                    {user?.role === 'admin' ? (
+                      <>
+                        <button onClick={()=>editProduct(product)} className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">Edit</button>
+                        <button onClick={()=>deleteProduct(product._id)} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+                      </>
+                    ) : null}
                   </div>
                 </div>
               </li>

@@ -12,10 +12,9 @@ function Navbar() {
         { id: 1, name: "Meals", href: "/dietchart" },
         { id: 2, name: "Workout", href: "/workoutvideo" },
         { id: 3, name: "Yoga & Meditation", href: "/yoga" },
-        { id: 4, name: "Progress", href: "/dashboard" },
-        { id: 5, name: "Shop", href: "/shop" },
-        { id: 6, name: "Blog", href: "/blog" },
-        { id: 7, name: "Map", href: "/gymmap" },
+        { id: 4, name: "Shop", href: "/shop" },
+        { id: 5, name: "Blog", href: "/blog" },
+        { id: 6, name: "Map", href: "/gymmap" },
     ];
 
     const toggleMenu = () => setMenuOpen(!menuOpen);

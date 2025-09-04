@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from 'sonner';
 import { backend } from "../context/api";
+import { AuthContext } from "../context/authcontext";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
 
     const handleLogin = async (e) => {
         e.preventDefault(); // Prevent form submission reload
@@ -20,15 +22,17 @@ export default function Login() {
                 password,
             });
 
-            // Save token in localStorage
             const token = response.data.token;
-            localStorage.setItem("authToken", token);
-
             const user = response.data.user;
-            localStorage.setItem("userId",user.id);
 
-            // Redirect user or show success message
-            // alert("Login successful!");
+            localStorage.setItem("authToken", token);
+            localStorage.setItem("userId", user.id);
+            if (user.role) localStorage.setItem("role", user.role);
+
+            if (login) {
+                login(token, user.id, user.role);
+            }
+
             toast.success('Logged in');
             navigate("/dashboard");
 
@@ -89,6 +93,16 @@ export default function Login() {
                                 Register
                             </a>
                         </p>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setEmail('admin@example.com');
+                                setPassword('admin123');
+                            }}
+                            className="inline-block rounded-lg bg-gray-100 px-5 py-3 text-sm font-medium text-gray-700"
+                        >
+                            Use Admin
+                        </button>
                         <button
                             type="submit"
                             className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white"

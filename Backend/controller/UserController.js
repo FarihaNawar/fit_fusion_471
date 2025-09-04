@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
-const SECRET_KEY = process.env.JWT_SECRET;
+const SECRET_KEY = process.env.JWT_SECRET || 'dev_secret_key_change_me';
 
 // ✅ Register a new user
 exports.createUser = async (req, res) => {
@@ -36,13 +36,32 @@ exports.createUser = async (req, res) => {
 };
 
 
-// ✅ Login user
+// ✅ Login user (supports admin fixed credentials)
 exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
             return res.status(400).json({ message: 'Email and password are required.' });
+        }
+
+        // Admin short-circuit
+        if (email === 'admin@example.com' && password === 'admin123') {
+            const token = jwt.sign(
+                { userId: 'admin', email, role: 'admin' },
+                SECRET_KEY,
+                { expiresIn: '24h' }
+            );
+            return res.status(200).json({
+                message: 'Login successful.',
+                token,
+                user: {
+                    id: 'admin',
+                    username: 'Admin',
+                    email,
+                    role: 'admin'
+                }
+            });
         }
 
         const user = await User.findOne({ email });
@@ -56,7 +75,7 @@ exports.loginUser = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { userId: user._id, email: user.email },
+            { userId: user._id, email: user.email, role: 'user' },
             SECRET_KEY,
             { expiresIn: '24h' }
         );
@@ -68,7 +87,8 @@ exports.loginUser = async (req, res) => {
                 id: user._id,
                 username: user.username,
                 email: user.email,
-                phoneNumber: user.phoneNumber
+                phoneNumber: user.phoneNumber,
+                role: 'user'
             }
         });
     } catch (err) {

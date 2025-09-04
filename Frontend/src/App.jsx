@@ -6,7 +6,6 @@ import HomePage from "./pages/homepage";
 import LoginPage from "./pages/loginpage";
 import BMIPage from "./pages/bmipage";
 import RecipePage from "./pages/recipepage";
-import CalorieCalculatorPage from "./pages/caloriecalculatorpage";
 import CreateAccountPage from "./pages/createaccountpage";
 import Shop from "./pages/shoppage";
 import Dashboardpage from "./pages/dashboardpage";
@@ -21,7 +20,6 @@ import Checkoutpage from "./pages/checkoutpage";
 import Blogpage from "./pages/blogpage";
 import Gymmappage from "./pages/gymmappage";
 import Burntcalpage from "./pages/burntcalpage";
-import CaloriesTrackerpage from "./pages/calorietracker";
 import WaterIntakePage from './pages/WaterIntakePage';
 import AboutUsPage from "./pages/aboutpage";
 import ServicesPage from "./pages/service";
@@ -36,11 +34,6 @@ function App() {
                 <Route path="/createaccount" element={<CreateAccountPage />} />
                 <Route path="/bmi" element={<BMIPage />} />
                 <Route path="/recipe" element={<RecipePage />} />
-                <Route
-                    path="/caloriescalc"
-                    element={<CalorieCalculatorPage />}
-                
-                />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/checkout" element={
                         <ProtectedRoute>
@@ -60,11 +53,6 @@ function App() {
                 <Route path="/workoutvideo" element={
                         <ProtectedRoute>
                             <Workoutvideopage/>
-                        </ProtectedRoute>
-                    } />
-                <Route path="/caloriestracker" element={
-                        <ProtectedRoute>
-                            <CaloriesTrackerpage/>
                         </ProtectedRoute>
                     } />
                 <Route path="/dietchart" element={
@@ -97,11 +85,7 @@ function App() {
                             <Burntcalpage/>
                         </ProtectedRoute>
                     } />
-                <Route path="/caltracker" element={
-                        <ProtectedRoute>
-                            <CaloriesTrackerpage/>
-                        </ProtectedRoute>
-                    } />
+                {/* Calorie calculator/tracker removed */}
                 <Route path="/water-intake" element={<WaterIntakePage />} />
                 <Route path="/about" element ={<AboutUsPage />} />
                 <Route path="/services" element ={<ServicesPage />} />

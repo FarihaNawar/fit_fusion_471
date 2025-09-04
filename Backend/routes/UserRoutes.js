@@ -10,7 +10,7 @@ const {
     updateUserById,
     deleteUserById 
 } = require('../controller/UserController');
-const authMiddleware = require('../middleware/AuthMiddleware');
+const { authenticate } = require('../middleware/AuthMiddleware');
 
 const router = express.Router();
 
@@ -28,37 +28,37 @@ router.post('/login', (req, res, next) => {
     next();
 }, loginUser);
 
-router.get('/me', authMiddleware, (req, res, next) => {
+router.get('/me', authenticate, (req, res, next) => {
     console.log("GET /api/users/me - Request received");
     next();
 }, getUserProfile);
 
-router.put('/update', authMiddleware, (req, res, next) => {
+router.put('/update', authenticate, (req, res, next) => {
     console.log("PUT /api/users/update - Request received");
     next();
 }, updateUser);
 
-router.delete('/delete', authMiddleware, (req, res, next) => {
+router.delete('/delete', authenticate, (req, res, next) => {
     console.log("DELETE /api/users/delete - Request received");
     next();
 }, deleteUser);
 
-router.get('/all', authMiddleware, (req, res, next) => {
+router.get('/all', authenticate, (req, res, next) => {
     console.log("GET /api/users/all - Request received");
     next();
 }, getAllUsers);
 
-router.get('/:id', authMiddleware, (req, res, next) => {
+router.get('/:id', authenticate, (req, res, next) => {
     console.log(`GET /api/users/${req.params.id} - Request received`);
     next();
 }, getUserById);
 
-router.put('/:id', authMiddleware, (req, res, next) => {
+router.put('/:id', authenticate, (req, res, next) => {
     console.log(`PUT /api/users/${req.params.id} - Request received`);
     next();
 }, updateUserById);
 
-router.delete('/:id', authMiddleware, (req, res, next) => {
+router.delete('/:id', authenticate, (req, res, next) => {
     console.log(`DELETE /api/users/${req.params.id} - Request received`);
     next();
 }, deleteUserById);

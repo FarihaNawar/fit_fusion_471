@@ -34,8 +34,8 @@ function TrackerCard() {
           </div>
         </a>
 
-        {/* Card 2: Calculate Required Calories */}
-        <a href="/caloriescalc" className="group relative block h-64 sm:h-80 lg:h-96">
+        {/* Removed: Calculate Required Calories */}
+        {/* <a href="/caloriescalc" className="group relative block h-64 sm:h-80 lg:h-96">
           <span className="absolute inset-0 border-2 border-dashed border-black"></span>
 
           <div className="relative flex h-full transform items-end border-2 border-black bg-white transition-transform group-hover:-translate-x-2 group-hover:-translate-y-2">
@@ -56,7 +56,7 @@ function TrackerCard() {
               <p className="mt-8 font-bold">Start Now →</p>
             </div>
           </div>
-        </a>
+        </a> */}
 
         {/* Card 3: Calculate Burnt Calories */}
         <a href="/burntcal" className="group relative block h-64 sm:h-80 lg:h-96">
@@ -82,8 +82,8 @@ function TrackerCard() {
           </div>
         </a>
 
-        {/* Card 4: Calculate Calorie Intake */}
-        <a href="/caltracker" className="group relative block h-64 sm:h-80 lg:h-96">
+        {/* Removed: Calculate Calorie Intake */}
+        {/* <a href="/caltracker" className="group relative block h-64 sm:h-80 lg:h-96">
           <span className="absolute inset-0 border-2 border-dashed border-black"></span>
 
           <div className="relative flex h-full transform items-end border-2 border-black bg-white transition-transform group-hover:-translate-x-2 group-hover:-translate-y-2">
@@ -104,7 +104,7 @@ function TrackerCard() {
               <p className="mt-8 font-bold">Start Now →</p>
             </div>
           </div>
-        </a>
+        </a> */}
       </div>
     </div>
   );

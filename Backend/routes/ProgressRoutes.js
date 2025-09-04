@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Progress = require("../models/ProgressModel"); // Adjust path as needed
-const authenticate = require("../middleware/AuthMiddleware"); // Middleware to verify token
+const { authenticate } = require("../middleware/AuthMiddleware"); // Middleware to verify token
 
 // Add a progress entry
 router.post("/", authenticate, async (req, res) => {
