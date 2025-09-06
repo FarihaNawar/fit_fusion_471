@@ -1,26 +1,37 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
 const cors = require('cors');
+
 const userRoutes = require('./routes/UserRoutes');
 // const progressRoutes = require('./routes/ProgressRoutes');
 const productRoutes = require('./routes/ProductRoutes');
 const recipeRoutes = require('./routes/RecipeRoutes');
 const yogaRoutes = require('./routes/YogaRoutes');
 
+const app = express();
 const PORT = process.env.PORT || 3500;
-const mongoString = `mongodb+srv://farihanawar:Arpa1234@cluster0.ok8fzeo.mongodb.net`;
+const mongoString = process.env.MONGO_URI;
+const dbName = process.env.MONGO_DB_NAME || 'fit_fusion';
+
+// ✅ Debugging log
+console.log("Loaded MONGO_URI:", mongoString);
+console.log("Using Database:", dbName);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
 // Database connection
-mongoose.connect(mongoString, { dbName: process.env.MONGO_DB_NAME || 'fit_fusion' })
-    .then(() => console.log(" Database connected successfully"))
+mongoose.connect(mongoString, {
+    dbName,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+    .then(() => console.log("✅ Database connected successfully"))
     .catch((err) => {
-        console.error(" Database connection error:", err);
+        console.error("❌ Database connection error:", err.message);
+        console.error("Full error:", err);
         process.exit(1);
     });
 
@@ -43,12 +54,12 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-// 404 handler with enhanced logging
+// 404 handler
 app.use((req, res) => {
     console.warn(`404 - Route not found: ${req.method} ${req.originalUrl}`);
     res.status(404).json({ message: `Route not found: ${req.originalUrl}` });
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
